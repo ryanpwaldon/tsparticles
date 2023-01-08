@@ -9,6 +9,7 @@ import type { RecursivePartial } from "../../../../Types/RecursivePartial";
 export class MoveTrail implements IMoveTrail, IOptionLoader<IMoveTrail> {
     enable;
     fillColor;
+    fillImageSrc;
     length;
 
     constructor() {
@@ -16,6 +17,7 @@ export class MoveTrail implements IMoveTrail, IOptionLoader<IMoveTrail> {
         this.length = 10;
         this.fillColor = new OptionsColor();
         this.fillColor.value = "#000000";
+        this.fillImageSrc = "";
     }
 
     load(data?: RecursivePartial<IMoveTrail>): void {
@@ -28,6 +30,8 @@ export class MoveTrail implements IMoveTrail, IOptionLoader<IMoveTrail> {
         }
 
         this.fillColor = OptionsColor.create(this.fillColor, data.fillColor);
+
+        this.fillImageSrc = data.fillImageSrc ?? this.fillImageSrc;
 
         if (data.length !== undefined) {
             this.length = data.length;

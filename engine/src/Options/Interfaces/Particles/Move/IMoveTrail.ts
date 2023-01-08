@@ -6,5 +6,6 @@ import type { IOptionsColor } from "../../IOptionsColor";
 export interface IMoveTrail {
     enable: boolean;
     fillColor: string | IOptionsColor;
+    fillImageSrc?: string;
     length: number;
 }

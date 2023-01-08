@@ -1,5 +1,5 @@
 import type { IHsl, IRgba } from "./Interfaces/Colors";
-import { clear, drawParticle, drawParticlePlugin, drawPlugin, paintBase } from "../Utils/CanvasUtils";
+import { clear, drawParticle, drawParticlePlugin, drawPlugin, paintBase, paintBaseImage } from "../Utils/CanvasUtils";
 import { deepExtend, isSsr } from "../Utils/Utils";
 import { getStyleFromHsl, getStyleFromRgb, rangeColorToHsl, rangeColorToRgb } from "../Utils/ColorUtils";
 import type { Container } from "./Container";
@@ -56,6 +56,7 @@ export class Canvas {
     private _preDrawUpdaters: IParticleUpdater[];
     private _resizePlugins: IContainerPlugin[];
     private _trailFillColor?: IRgba;
+    private _trailFillImage?: HTMLImageElement;
 
     /**
      * Constructor of canvas manager
@@ -98,8 +99,9 @@ export class Canvas {
 
         if (options.backgroundMask.enable) {
             this.paint();
-        } else if (trail.enable && trail.length > 0 && this._trailFillColor) {
-            this._paintBase(getStyleFromRgb(this._trailFillColor, 1 / trail.length));
+        } else if (trail.enable && trail.length > 0 && (this._trailFillColor || this._trailFillImage)) {
+            if (this._trailFillColor) this._paintBase(getStyleFromRgb(this._trailFillColor, 1 / trail.length));
+            if (this._trailFillImage) this._paintBaseImage(this._trailFillImage, 1 / trail.length);
         } else {
             this.draw((ctx) => {
                 clear(ctx, this.size);
@@ -534,7 +536,8 @@ export class Canvas {
     private _initTrail(): void {
         const options = this.container.actualOptions,
             trail = options.particles.move.trail,
-            fillColor = rangeColorToRgb(trail.fillColor);
+            fillColor = rangeColorToRgb(trail.fillColor),
+            fillImageSrc = trail.fillImageSrc
 
         if (fillColor) {
             const trail = options.particles.move.trail;
@@ -544,11 +547,24 @@ export class Canvas {
                 a: 1 / trail.length,
             };
         }
+
+        if (fillImageSrc) {
+            this._trailFillImage = new Image()
+            this._trailFillImage.src = fillImageSrc
+        }
     }
 
     private _paintBase(baseColor?: string): void {
         this.draw((ctx) => {
             paintBase(ctx, this.size, baseColor);
+        });
+    }
+
+    private _paintBaseImage(baseImage: HTMLImageElement, opacity: number): void {
+        this.draw((ctx) => {
+            ctx.globalAlpha = opacity;
+            paintBaseImage(ctx, this.size, baseImage);
+            ctx.globalAlpha = 1;
         });
     }
 

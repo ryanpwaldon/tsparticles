@@ -57,6 +57,16 @@ export function paintBase(context: CanvasRenderingContext2D, dimension: IDimensi
 }
 
 /**
+ * Fills a rectangle with the given image for the whole canvas.
+ * @param context - The canvas context to draw on.
+ * @param dimension - The dimension of the rectangle.
+ * @param baseImage - The base image of the rectangle, if not specified a transparent color will be used.
+ */
+export function paintBaseImage(context: CanvasRenderingContext2D, dimension: IDimension, baseImage: HTMLImageElement): void {
+    context.drawImage(baseImage, 0, 0, dimension.width, dimension.height);
+}
+
+/**
  * Clears the canvas.
  * @param context - The canvas context to clear.
  * @param dimension - The dimension of the canvas.
